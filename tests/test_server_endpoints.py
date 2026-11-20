@@ -18,7 +18,7 @@ def test_endpoints():
     # 2. UI Root HTML
     r_root = client.get("/")
     assert r_root.status_code == 200
-    assert "ATS Resume Tracker" in r_root.text
+    assert "Resume ATS Check" in r_root.text
     print("[API Test] UI HTML serving passed.")
 
     # 3. Resume Parse Endpoint

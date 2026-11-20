@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stops the ATS Resume Tracker FastAPI server started by server-start.sh.
+# Stops the Resume ATS Check FastAPI server started by server-start.sh.
 # Falls back to killing whatever is listening on the port, in case the PID file
 # is stale or the server was started another way.
 set +e

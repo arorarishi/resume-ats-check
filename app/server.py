@@ -34,7 +34,7 @@ from app.analyzer.tailorer import tailor_resume_async
 # Initialize DB on startup
 init_db()
 
-app = FastAPI(title="ATS Resume Tracker & Career Suite", version="1.0.0")
+app = FastAPI(title="Resume ATS Check", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

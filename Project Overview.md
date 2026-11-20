@@ -1,6 +1,6 @@
 ### Project Overview
 
-The **ATS Resume Tracker & Career Suite** is a desktop application designed to streamline the technical job application cycle. It provides an automated pipeline spanning resume parsing, ATS hygiene scoring, JD requirement matching, multi-tier AI resume tailoring with DOCX/TXT document generation, a historical resume ledger, and a Kanban application funnel.
+**Resume ATS Check** is a desktop application that compares a resume against a job description and checks it for ATS compatibility. It provides an automated pipeline spanning resume parsing, ATS hygiene scoring, JD requirement matching, multi-tier AI resume tailoring with DOCX/TXT document generation, and a historical resume ledger.
 
 - **Frontend**: Vanilla ES6+ JavaScript, CSS3 (Dark Theme), and HTML5 single-page application served via FastAPI static mounting.
 - **Backend API**: [FastAPI](app/server.py) with [Uvicorn](main.py) running on an auto-allocated local port (`8765+`).

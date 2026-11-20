@@ -1,12 +1,12 @@
-# ATS Resume Tracker & Career Suite - Complete System Architecture
+# Resume ATS Check - Complete System Architecture
 
-This document serves as the authoritative architectural specification and engineering guide for the **ATS Resume Tracker & Career Suite**. It is specifically structured so that any engineer or AI assistant (such as Anthropic Claude or Google DeepMind Antigravity) can understand the full system, diagnose issues, trace data flow, and fix or extend the codebase safely.
+This document serves as the authoritative architectural specification and engineering guide for the **Resume ATS Check**. It is specifically structured so that any engineer or AI assistant (such as Anthropic Claude or Google DeepMind Antigravity) can understand the full system, diagnose issues, trace data flow, and fix or extend the codebase safely.
 
 ---
 
 ## 1. System Overview & Core Capabilities
 
-The ATS Resume Tracker & Career Suite is a desktop-first career intelligence platform designed to maximize ATS (Applicant Tracking System) keyword alignment, automate resume tailoring, and track application progress.
+Resume ATS Check is a desktop-first tool that compares a resume against a job description, runs ATS (Applicant Tracking System) checks, maximizes keyword alignment, and automates resume tailoring.
 
 ```mermaid
 graph TD

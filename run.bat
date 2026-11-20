@@ -1,5 +1,5 @@
 @echo off
-title ATS Resume Tracker & Career Suite
+title Resume ATS Check
 cd /d "%~dp0"
 
 echo [1/3] Checking Python environment...

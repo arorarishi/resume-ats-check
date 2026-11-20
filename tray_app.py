@@ -1,5 +1,5 @@
 """
-System tray controller for the ATS Resume Tracker server.
+System tray controller for the Resume ATS Check server.
 
 Launched by ATS.bat (via pythonw, no console window). Shows a tray icon
 that is GREEN while the server is running and RED while it is stopped,
@@ -159,7 +159,7 @@ def make_icon_image(color):
 def refresh(icon: pystray.Icon):
     running = is_server_running()
     icon.icon = make_icon_image(GREEN if running else RED)
-    icon.title = f"ATS Resume Tracker - {'Running' if running else 'Stopped'}"
+    icon.title = f"Resume ATS Check - {'Running' if running else 'Stopped'}"
     icon.update_menu()
 
 
@@ -225,7 +225,7 @@ def main():
     icon = pystray.Icon(
         "ats_resume_tracker",
         icon=make_icon_image(RED),
-        title="ATS Resume Tracker",
+        title="Resume ATS Check",
         menu=build_menu(),
     )
     icon.run(setup=setup)

@@ -1,6 +1,6 @@
-# ATS Resume Tracker & Career Suite - Desktop Application
+# Resume ATS Check
 
-A modern, fast, and local-first desktop application designed to optimize your job application workflow, maximize ATS (Applicant Tracking System) keyword alignment, automate resume tailoring, and track recruitment progress.
+A local-first desktop app that compares your resume against a job description, scores the match, runs ATS (Applicant Tracking System) checks on your resume, and suggests or generates tailored versions.
 
 > 📖 **Architectural Blueprint & AI Guide**: Looking for detailed database schemas, state machines, REST API specs, or instructions for AI assistants like Claude? See [ARCHITECTURE.md](ARCHITECTURE.md).
 > 
@@ -208,7 +208,7 @@ When asking Claude or another AI assistant to modify, debug, or extend this appl
 
 ### Recommended Prompt for Claude:
 ```
-I am working on the ATS Resume Tracker & Career Suite located in this repository.
+I am working on the Resume ATS Check located in this repository.
 Before making any changes, please read ARCHITECTURE.md completely. It contains the authoritative database schema, REST API routes, pipeline state machine, and design rules.
 
 Rules to follow:

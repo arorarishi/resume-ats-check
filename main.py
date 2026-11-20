@@ -53,7 +53,7 @@ def main():
     port = find_free_port(8765)
     url = f"http://127.0.0.1:{port}"
     print("=" * 60)
-    print("   ATS Resume Tracker & Career Suite - Desktop App")
+    print("   Resume ATS Check - Desktop App")
     print(f"   Starting UI at: {url}")
     print("=" * 60)
 

@@ -1,4 +1,4 @@
-// ATS Resume Tracker & Career Suite - Desktop Frontend Application
+// Resume ATS Check - Desktop Frontend Application
 let currentResumeData = null;
 let currentJdData = null;
 let currentComparison = null;

@@ -1,4 +1,4 @@
-# Starts the ATS Resume Tracker FastAPI server directly (no desktop browser window),
+# Starts the Resume ATS Check FastAPI server directly (no desktop browser window),
 # detached from this shell, tracked via server.pid for server-stop.ps1 to find later.
 $ErrorActionPreference = "Stop"
 
