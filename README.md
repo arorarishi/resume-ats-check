@@ -28,9 +28,12 @@ run.bat
 This automatically activates the `.venv` virtual environment and launches the desktop app window.
 
 ### Method 2: Command Line Launcher
-From the project folder `C:\Mine\Work\ML\Projects\Application-Tracker`:
-```powershell
-.\.venv\Scripts\activate
+```bash
+git clone https://github.com/arorarishi/resume-ats-check.git
+cd resume-ats-check
+python -m venv .venv
+# Windows: .\.venv\Scripts\activate    macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
 python main.py
 ```
 The app will launch in a clean, standalone desktop window (using native Edge / Chrome app mode, or your default browser).
@@ -40,7 +43,7 @@ The app will launch in a clean, standalone desktop window (using native Edge / C
 ## 📁 Project Structure
 
 ```
-C:\Mine\Work\ML\Projects\Application-Tracker\
+resume-ats-check/
 ├── .venv/                         # Dedicated Python virtual environment
 ├── requirements.txt               # Dependencies (FastAPI, Uvicorn, PyPDF, python-docx, etc.)
 ├── run.bat                        # Double-clickable Windows desktop launcher

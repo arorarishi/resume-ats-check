@@ -49,7 +49,7 @@ graph TD
 ## 2. Directory Map & File Responsibilities
 
 ```
-C:\Mine\Work\ML\Projects\Application-Tracker\
+resume-ats-check/
 ├── main.py                        # Desktop launcher (detects Edge/Chrome App mode or browser, starts Uvicorn)
 ├── run.bat                        # Windows 1-click execution script
 ├── requirements.txt               # Python package dependencies
