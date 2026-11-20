@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1953.243 1115.2" width="1953.243" height="1115.2" style="--bg:#FFFFFF;--fg:#3B3B3B;--line:#3B3B3B;--accent:#005FB8;--muted:#3B3B3BCC;--surface:#F8F8F8;--border:#3B3B3B;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="Client" data-label="Desktop UI (Vanilla JS &amp; CSS)">
+  <rect x="40" y="40" width="1873.243" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="40" width="1873.243" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Desktop UI (Vanilla JS &amp; CSS)</text>
+</g>
+<g class="subgraph" data-id="Launcher" data-label="Desktop App Launcher">
+  <rect x="626.0788333333334" y="259.20000000000005" width="436.5949999999999" height="335" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="626.0788333333334" y="259.20000000000005" width="436.5949999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="638.0788333333334" y="273.20000000000005" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Desktop App Launcher</text>
+</g>
+<g class="subgraph" data-id="Backend" data-label="FastAPI REST Services">
+  <rect x="544.3433333333335" y="654.2" width="764.3249999999998" height="181.8" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="544.3433333333335" y="654.2" width="764.3249999999998" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="556.3433333333335" y="668.2" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">FastAPI REST Services</text>
+</g>
+<g class="subgraph" data-id="DataStore" data-label="Local Storage (data/)">
+  <rect x="851.1790833333333" y="964.3000000000001" width="492.91099999999994" height="110.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="851.1790833333333" y="964.3000000000001" width="492.91099999999994" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="863.1790833333333" y="978.3000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Local Storage (data/)</text>
+</g>
+<g class="subgraph" data-id="Providers" data-label="Inference Layer">
+  <rect x="241.34808333333342" y="964.3" width="581.8309999999999" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="241.34808333333342" y="964.3" width="581.8309999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="253.34808333333342" y="978.3" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Inference Layer</text>
+</g>
+<polyline class="edge" data-from="Client" data-to="FASTAPI" data-style="solid" data-arrow-start="true" data-arrow-end="true" data-label="REST Endpoints / Static Assets" points="976.6215,136.9 976.6215,541.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" marker-start="url(#arrowhead-start)" />
+<polyline class="edge" data-from="FASTAPI" data-to="PARSERS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="941.5953333333333,578.2 941.5953333333333,638.2 1125.7163333333333,638.2 1125.7163333333333,698.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="FASTAPI" data-to="ANALYZER" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="941.5953333333333,578.2 941.5953333333333,638.2 757.4743333333333,638.2 757.4743333333333,698.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="LLM_CLIENT" data-to="EXT_LLM" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="HTTP / JSON" points="658.3823333333335,820 658.3823333333336,878 510.30683333333354,878 510.30683333333354,946.3 411.70308333333355,946.3 411.7030833333335,1008.3" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ANALYZER" data-to="OFFLINE" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Fallback / Offline" points="757.4743333333336,735.1 757.4743333333336,747.1 766.4213333333335,747.1 766.4213333333336,878 700.6185833333335,878 700.6185833333334,1008.3" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="FASTAPI" data-to="DB" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="941.5953333333333,578.2 941.5953333333333,638.2 924.3471666666666,638.2 924.3471666666666,783.1" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="DB" data-to="SQLITE" data-style="solid" data-arrow-start="true" data-arrow-end="true" points="924.3471666666667,820 924.3471666666668,946.3000000000001 968.60675,946.3000000000001 968.60675,946.3000000000001 947.0635833333334,946.3000000000001 947.0635833333336,1008.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" marker-start="url(#arrowhead-start)" />
+<polyline class="edge" data-from="PARSERS" data-to="DOCX_DIR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Generates Word/Text Resumes" points="1125.7163333333333,735.1 1125.7163333333333,878.0000000000001 1191.5190833333331,878.0000000000001 1191.5190833333336,1008.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="RUN" data-to="MAIN" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="815.9335000000001,340.1 815.9335,388.1" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MAIN" data-to="BROWSER" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Spawns Standalone App Window" points="801.5318333333333,425.00000000000006 801.5318333333333,437.00000000000006 725.2978333333333,437.00000000000006 725.2978333333333,541.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MAIN" data-to="FASTAPI" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Starts ASGI Server" points="830.3351666666666,425.00000000000006 830.3351666666666,437.00000000000006 906.5691666666667,437.00000000000006 906.5691666666667,541.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ANALYZER" data-to="LLM_CLIENT" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="667.3293333333335,735.1 667.3293333333335,747.1 658.3823333333335,747.1 658.3823333333335,783.1" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ANALYZER" data-to="DB" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="847.6193333333333,735.1 847.6193333333333,747.1 900.9300000000001,747.1 900.9300000000001,783.1" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="Client" data-to="FASTAPI" data-label="REST Endpoints / Static Assets">
+  <rect x="894.6215" y="179.9" width="163.18" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="976.2115" y="195.05" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">REST Endpoints / Static Assets</text>
+</g>
+<g class="edge-label" data-from="LLM_CLIENT" data-to="EXT_LLM" data-label="HTTP / JSON">
+  <rect x="469.30683333333354" y="885" width="81.208" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="509.9108333333335" y="900.15" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">HTTP / JSON</text>
+</g>
+<g class="edge-label" data-from="ANALYZER" data-to="OFFLINE" data-label="Fallback / Offline">
+  <rect x="653.1185833333334" y="885" width="94.27600000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="700.2565833333334" y="900.15" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Fallback / Offline</text>
+</g>
+<g class="edge-label" data-from="PARSERS" data-to="DOCX_DIR" data-label="Generates Word/Text Resumes">
+  <rect x="1109.0190833333331" y="885.0000000000001" width="164.96200000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1191.5000833333331" y="900.1500000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Generates Word/Text Resumes</text>
+</g>
+<g class="edge-label" data-from="MAIN" data-to="BROWSER" data-label="Spawns Standalone App Window">
+  <rect x="640.2978333333334" y="468.0000000000001" width="169.714" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="725.1548333333334" y="483.1500000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Spawns Standalone App Window</text>
+</g>
+<g class="edge-label" data-from="MAIN" data-to="FASTAPI" data-label="Starts ASGI Server">
+  <rect x="852.5691666666667" y="468.0000000000001" width="107.93800000000003" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="906.5381666666667" y="483.1500000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Starts ASGI Server</text>
+</g>
+<g class="node" data-id="UI_T1" data-label="Tab 1: Master Resume" data-shape="rectangle">
+  <rect x="234.13599999999997" y="84" width="167.92" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="318.09599999999995" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Tab 1: Master Resume</text>
+</g>
+<g class="node" data-id="UI_T2" data-label="Tab 2: ATS Normalizer" data-shape="rectangle">
+  <rect x="856.723" y="84" width="174.589" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="944.0174999999999" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Tab 2: ATS Normalizer</text>
+</g>
+<g class="node" data-id="UI_T3" data-label="Tab 3: JD Matcher" data-shape="rectangle">
+  <rect x="56" y="84" width="150.136" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="131.06799999999998" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Tab 3: JD Matcher</text>
+</g>
+<g class="node" data-id="UI_T4" data-label="Tab 4: Side-by-Side Matrix" data-shape="rectangle">
+  <rect x="1276.721" y="84" width="196.078" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1374.76" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Tab 4: Side-by-Side Matrix</text>
+</g>
+<g class="node" data-id="UI_T5" data-label="Tab 5: 3-Tier Tailorer" data-shape="rectangle">
+  <rect x="1500.799" y="84" width="167.92000000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1584.759" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Tab 5: 3-Tier Tailorer</text>
+</g>
+<g class="node" data-id="UI_T6" data-label="Tab 6: Resume Ledger" data-shape="rectangle">
+  <rect x="430.05600000000004" y="84" width="174.589" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="517.3505" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Tab 6: Resume Ledger</text>
+</g>
+<g class="node" data-id="UI_T7" data-label="Tab 7: Audit &amp; Suggestions" data-shape="rectangle">
+  <rect x="632.645" y="84" width="196.07799999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="730.684" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Tab 7: Audit &amp; Suggestions</text>
+</g>
+<g class="node" data-id="UI_T8" data-label="Tab 8: Application Funnel" data-shape="rectangle">
+  <rect x="1059.312" y="84" width="189.40899999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1154.0165" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Tab 8: Application Funnel</text>
+</g>
+<g class="node" data-id="UI_SET" data-label="Modal: AI Provider Settings" data-shape="rectangle">
+  <rect x="1696.719" y="84" width="200.52399999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1796.981" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Modal: AI Provider Settings</text>
+</g>
+<g class="node" data-id="RUN" data-label="run.bat" data-shape="rectangle">
+  <rect x="774.2105" y="303.20000000000005" width="83.446" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="815.9335" y="321.65000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">run.bat</text>
+</g>
+<g class="node" data-id="MAIN" data-label="main.py" data-shape="rectangle">
+  <rect x="772.7284999999999" y="388.1" width="86.41" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="815.9335" y="406.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">main.py</text>
+</g>
+<g class="node" data-id="BROWSER" data-label="Chrome / Edge (--app)" data-shape="rectangle">
+  <rect x="642.0788333333334" y="541.3000000000001" width="166.438" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="725.2978333333333" y="559.7500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Chrome / Edge (--app)</text>
+</g>
+<g class="node" data-id="FASTAPI" data-label="FastAPI App (app/server.py)" data-shape="rectangle">
+  <rect x="836.5168333333334" y="541.3000000000001" width="210.15699999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="941.5953333333333" y="559.7500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">FastAPI App (app/server.py)</text>
+</g>
+<g class="node" data-id="PARSERS" data-label="app/parsers/ (pdf, docx, ats_normalizer, exporter)" data-shape="rectangle">
+  <rect x="958.7643333333333" y="698.2" width="333.90399999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1125.7163333333333" y="716.6500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">app/parsers/ (pdf, docx, ats_normalizer, exporter)</text>
+</g>
+<g class="node" data-id="ANALYZER" data-label="app/analyzer/ (jd_parser, matcher, suggester, tailorer)" data-shape="rectangle">
+  <rect x="577.1843333333335" y="698.2" width="360.5799999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="757.4743333333333" y="716.6500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">app/analyzer/ (jd_parser, matcher, suggester, tailorer)</text>
+</g>
+<g class="node" data-id="LLM_CLIENT" data-label="app/analyzer/llm_client.py" data-shape="rectangle">
+  <rect x="560.3433333333335" y="783.1" width="196.07799999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="658.3823333333335" y="801.5500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">app/analyzer/llm_client.py</text>
+</g>
+<g class="node" data-id="DB" data-label="app/database.py" data-shape="rectangle">
+  <rect x="854.0956666666666" y="783.1" width="140.503" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="924.3471666666666" y="801.5500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">app/database.py</text>
+</g>
+<g class="node" data-id="SQLITE" data-label="data/applications.db" data-shape="cylinder">
+  <rect x="867.1790833333333" y="1015.3000000000001" width="159.769" height="36.900000000000006" fill="var(--_node-fill)" stroke="none" />
+  <line x1="867.1790833333333" y1="1015.3000000000001" x2="867.1790833333333" y2="1052.2" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="1026.9480833333332" y1="1015.3000000000001" x2="1026.9480833333332" y2="1052.2" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="947.0635833333333" cy="1052.2" rx="79.8845" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="947.0635833333333" cy="1015.3000000000001" rx="79.8845" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="947.0635833333333" y="1033.75" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">data/applications.db</text>
+</g>
+<g class="node" data-id="DOCX_DIR" data-label="data/generated_resumes/ (*.docx, *.txt)" data-shape="rectangle">
+  <rect x="1054.9480833333332" y="1008.3000000000001" width="273.14199999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1191.5190833333331" y="1026.75" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">data/generated_resumes/ (*.docx, *.txt)</text>
+</g>
+<g class="node" data-id="OFFLINE" data-label="Local Offline Heuristic Engine" data-shape="rectangle">
+  <rect x="594.0580833333333" y="1008.3" width="213.12099999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="700.6185833333334" y="1026.75" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Local Offline Heuristic Engine</text>
+</g>
+<g class="node" data-id="EXT_LLM" data-label="Active LLM (OpenAI, Groq, DeepSeek, Ollama)" data-shape="rectangle">
+  <rect x="257.3480833333334" y="1008.3" width="308.71" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="411.70308333333344" y="1026.75" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Active LLM (OpenAI, Groq, DeepSeek, Ollama)</text>
+</g>
+</svg>

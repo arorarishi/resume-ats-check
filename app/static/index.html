@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATS Resume Tracker & Career Suite</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=3.4">
+  <script>
+    // Apply any saved theme override before first paint, to avoid a flash of the default theme.
+    (function () {
+      try {
+        var raw = localStorage.getItem("ats-theme-vars");
+        if (!raw) return;
+        var vars = JSON.parse(raw);
+        var root = document.documentElement;
+        Object.keys(vars).forEach(function (name) {
+          root.style.setProperty(name, vars[name]);
+        });
+      } catch (e) { /* ignore - falls back to default theme */ }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="logo-group">
+      <div class="logo-icon">ATS</div>
+      <div>
+        <div class="logo-title">ATS Resume Tracker & Career Suite</div>
+        <div class="logo-subtitle">Desktop Intelligent Resume Optimizer & Pipeline Funnel</div>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="status-badge" id="active-resume-badge" style="display:none;">
+        <span>📄 Active: <strong id="active-resume-name">resume.pdf</strong></span>
+      </div>
+      <div class="status-badge" id="active-provider-badge" style="cursor:pointer;" title="Click to go to Settings">
+        <span class="status-dot" id="active-provider-dot"></span>
+        <span id="active-provider-text">Local Offline Engine</span>
+      </div>
+      <button class="btn btn-outline" id="btn-goto-settings" style="font-size:12px; padding:5px 10px;">
+        <span>⚙️ Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-tab="tab-master">
+      <span>📚</span> 1. Master Resume
+    </button>
+    <button class="nav-tab" data-tab="tab-resume">
+      <span>📄</span> 2. Resume & ATS JSON
+    </button>
+    <button class="nav-tab" data-tab="tab-compare">
+      <span>⚖️</span> 3. Compare
+    </button>
+    <button class="nav-tab" data-tab="tab-skills">
+      <span>🎯</span> 4. Side-by-Side Skills
+    </button>
+    <button class="nav-tab" data-tab="tab-tailor">
+      <span>🛠️</span> 5. AI Resume Tailor
+    </button>
+    <button class="nav-tab" data-tab="tab-ledger">
+      <span>📜</span> 6. Resume List & Ledger
+    </button>
+    <button class="nav-tab" data-tab="tab-suggestions">
+      <span>💡</span> 7. Audit & Tips
+    </button>
+    <button class="nav-tab" data-tab="tab-funnel">
+      <span>📊</span> 8. Application Funnel
+    </button>
+  </nav>
+
+  <!-- Main Viewport -->
+  <main class="main-viewport">
+
+    <!-- ================= TAB 1: MASTER RESUME & PROJECTS ================= -->
+    <section id="tab-master" class="tab-pane active">
+      <div class="card" style="padding:10px 16px; margin-bottom:14px; display:flex; align-items:center; gap:8px; flex-wrap:nowrap; overflow-x:auto;">
+        <span style="font-size:12px; color:var(--text-secondary); font-weight:600; white-space:nowrap; flex-shrink:0;">👤 Profile:</span>
+        <select id="master-profile-select" style="flex:1 1 auto; min-width:100px; max-width:220px; font-size:12px; padding:6px 8px;"></select>
+        <button class="btn btn-outline" id="btn-rename-master-profile" style="font-size:12px; padding:4px 9px; flex-shrink:0;" title="Rename this profile">✏️</button>
+        <button class="btn btn-outline" id="btn-new-master-profile" style="font-size:12px; padding:4px 9px; flex-shrink:0;" title="Create a new blank Master Profile">➕</button>
+        <button class="btn btn-outline" id="btn-duplicate-master-profile" style="font-size:12px; padding:4px 9px; flex-shrink:0;" title="Duplicate this profile into a new one">📋</button>
+        <button class="btn btn-danger" id="btn-delete-master-profile" style="font-size:12px; padding:4px 9px; flex-shrink:0;" title="Delete this profile">🗑</button>
+        <span style="width:1px; align-self:stretch; background:var(--border-color); flex-shrink:0;"></span>
+        <input type="file" id="master-file-input" accept=".pdf,.docx,.txt" style="display:none;">
+        <label for="master-file-input" class="btn btn-outline" id="btn-master-choose-file" style="font-size:12px; padding:4px 10px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0; flex-shrink:0; white-space:nowrap;" title="Import a PDF/DOCX/TXT resume into the active profile">
+          📁 Import
+        </label>
+        <button class="btn btn-success" id="btn-save-master-resume" style="font-size:12px; padding:4px 10px; flex-shrink:0; white-space:nowrap;" title="Save changes to the active profile">
+          💾 Save
+        </button>
+        <button class="btn btn-outline" id="btn-reset-sample-master" style="font-size:12px; padding:4px 9px; flex-shrink:0; white-space:nowrap;" title="Switch to the read-only Sample Profile for reference">
+          ⚡ Sample
+        </button>
+        <span id="master-profile-count-hint" style="font-size:11px; color:var(--text-muted); white-space:nowrap; flex-shrink:0; margin-left:auto;"></span>
+      </div>
+      <div id="master-readonly-banner" style="display:none; align-items:center; gap:8px; background:rgba(56,189,248,0.1); border:1px solid var(--text-info); border-radius:6px; padding:8px 14px; margin-bottom:14px; font-size:12px; color:var(--text-secondary);">
+        🔒 This is the read-only Sample Profile, shown for reference only. Click <strong>📋 Duplicate</strong> above to create an editable copy.
+      </div>
+      <div class="card">
+        <!-- Drop target for drag-and-drop resume import (button lives in the top bar) -->
+        <div id="master-dropzone" style="background:linear-gradient(135deg, rgba(79,70,229,0.06), rgba(56,189,248,0.05)); border:1px dashed var(--border-color); border-radius:6px; padding:6px 14px; margin-bottom:16px; transition:border-color 0.2s; display:flex; align-items:center; gap:10px; min-height:20px;">
+          <span id="master-selected-filename" style="font-size:11px; color:var(--text-info); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+          <span id="master-import-status" style="font-size:11px; color:var(--text-info); display:none;"></span>
+        </div>
+
+        <div class="grid-2" style="gap:20px;">
+          <!-- Left: Identity, Summary, and Skills -->
+          <div>
+            <div style="background:var(--bg-stat); padding:14px; border-radius:6px; border:1px solid var(--border-color); margin-bottom:14px;">
+              <div style="font-size:12px; font-weight:700; color:var(--text-primary); margin-bottom:10px;">Candidate Identity & Contact</div>
+              <div class="grid-2" style="margin-bottom:8px;">
+                <div>
+                  <label style="font-size:10px; color:var(--text-secondary);">Full Name</label>
+                  <input type="text" class="input-field" id="master-name" placeholder="Full Name">
+                </div>
+                <div>
+                  <label style="font-size:10px; color:var(--text-secondary);">Location</label>
+                  <input type="text" class="input-field" id="master-location" placeholder="City, ST">
+                </div>
+              </div>
+              <div class="grid-2" style="margin-bottom:8px;">
+                <div>
+                  <label style="font-size:10px; color:var(--text-secondary);">Email</label>
+                  <input type="email" class="input-field" id="master-email" placeholder="Email">
+                </div>
+                <div>
+                  <label style="font-size:10px; color:var(--text-secondary);">Phone</label>
+                  <input type="text" class="input-field" id="master-phone" placeholder="Phone">
+                </div>
+              </div>
+              <div class="grid-2">
+                <div>
+                  <label style="font-size:10px; color:var(--text-secondary);">LinkedIn</label>
+                  <input type="text" class="input-field" id="master-linkedin" placeholder="linkedin.com/in/...">
+                </div>
+                <div>
+                  <label style="font-size:10px; color:var(--text-secondary);">GitHub</label>
+                  <input type="text" class="input-field" id="master-github" placeholder="github.com/...">
+                </div>
+              </div>
+            </div>
+
+            <!-- Professional Summary -->
+            <div style="margin-bottom:14px;">
+              <label style="font-size:11px; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">
+                Master Comprehensive Summary:
+              </label>
+              <textarea class="textarea" id="master-summary" rows="4" placeholder="Comprehensive career narrative covering all domains..."></textarea>
+            </div>
+
+            <!-- Skills Taxonomy -->
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <label style="font-size:11px; font-weight:700; color:var(--text-secondary);">
+                  Categorized Skills (JSON Structure):
+                </label>
+              </div>
+              <textarea class="textarea" id="master-skills-json" rows="6" placeholder='{"Languages": ["Python", "Go"], "Cloud": ["AWS", "Docker"]}'></textarea>
+            </div>
+          </div>
+
+          <!-- Right: Projects Repository -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div style="font-size:13px; font-weight:700; color:var(--text-primary);">
+                🚀 Historical Projects Repository (<span id="master-projects-count">0</span> Projects)
+              </div>
+              <button class="btn btn-outline" id="btn-open-add-project" style="font-size:11px; padding:3px 8px;">
+                ➕ Add Project
+              </button>
+            </div>
+
+            <div id="master-projects-list" style="display:flex; flex-direction:column; gap:10px; max-height:550px; overflow-y:auto; padding-right:4px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: RESUME & ATS JSON ================= -->
+    <section id="tab-resume" class="tab-pane">
+      <div class="grid-2">
+        <!-- Left: ATS Hygiene Audit of the Master Resume -->
+        <div>
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+            This is a live ATS Hygiene audit and standardized JSON view of your <strong>Master Resume</strong> (Tab 1).
+            Edit your Master Resume there to update this view — there's no separate resume upload here anymore.
+          </div>
+
+          <!-- ATS Hygiene Card -->
+          <div class="card" id="hygiene-card" style="display:none;">
+            <div class="card-title">
+              <span>ATS Hygiene & Formatting Audit</span>
+              <span class="badge badge-exact" id="hygiene-grade-badge">Grade: A</span>
+            </div>
+            
+            <div style="display:flex; align-items:center; gap:20px; margin-bottom:14px;">
+              <div class="score-circle" id="hygiene-score-circle">
+                <div class="score-num" id="hygiene-score-val">88</div>
+                <div class="score-label">ATS Score</div>
+              </div>
+              <div style="flex:1; font-size:12px;">
+                <div style="margin-bottom:4px;">Action Verbs in Bullets: <strong id="metric-verbs">0%</strong></div>
+                <div style="margin-bottom:4px;">Measurable Metrics: <strong id="metric-metrics">0%</strong></div>
+                <div>Word Count: <strong id="metric-words">0</strong> words</div>
+              </div>
+            </div>
+
+            <div id="hygiene-warnings" style="margin-bottom:10px;"></div>
+            <div id="hygiene-strengths"></div>
+          </div>
+        </div>
+
+        <!-- Right: Generated ATS JSON & Extracted Profile -->
+        <div>
+          <div class="card">
+            <div class="card-title">
+              <span>Standardized ATS JSON</span>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-outline" id="btn-copy-json" style="font-size:11px; padding:4px 8px;">
+                  📋 Copy JSON
+                </button>
+                <button class="btn btn-outline" id="btn-download-json" style="font-size:11px; padding:4px 8px;">
+                  💾 Download JSON
+                </button>
+              </div>
+            </div>
+
+            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">
+              Normalized structure indexed for applicant tracking systems:
+            </div>
+            <pre class="code-box" id="json-viewer">// Upload or paste a resume to generate ATS JSON schema...</pre>
+          </div>
+
+          <!-- Quick Parsed Profile Card -->
+          <div class="card" id="parsed-summary-card" style="display:none;">
+            <div class="card-title">Parsed Identity & Skills</div>
+            <div id="parsed-contact-box" style="font-size:13px; margin-bottom:10px;"></div>
+            <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:6px;">DETECTED SKILLS</div>
+            <div id="parsed-skills-container" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+          </div>
+
+          <!-- Auto-Synced Master Resume Notification Card -->
+          <div class="card" id="master-sync-notice-card" style="display:none; background:rgba(30, 58, 138, 0.25); border:1px solid var(--accent-primary);">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+              <div>
+                <div style="font-weight:700; color:var(--text-info); font-size:13px; display:flex; align-items:center; gap:6px;">
+                  <span>✨ Master Resume Automatically Derived & Synced</span>
+                </div>
+                <div id="master-sync-notice-text" style="font-size:12px; color:var(--text-secondary); margin-top:3px;">
+                  Profile identity, skills, experiences, and projects were automatically extracted and populated into your Master Resume.
+                </div>
+              </div>
+              <button class="btn btn-primary" id="btn-goto-master-resume" style="font-size:11px; padding:6px 12px; white-space:nowrap;">
+                View Master Resume ➔
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: COMPARE TO JD ================= -->
+    <section id="tab-compare" class="tab-pane">
+      <div class="grid-2">
+        <!-- Left: Paste JD & Create New Resume -->
+        <div class="card">
+          <div class="card-title">
+            <span>✨ Compare</span>
+            <button class="btn btn-outline" id="btn-load-sample-jd" style="font-size:11px; padding:4px 8px;">
+              ⚡ Load Sample JD
+            </button>
+          </div>
+          
+          <!-- First line live derivation preview -->
+          <div style="background:rgba(30, 41, 59, 0.7); border:1px solid var(--border-color); border-radius:6px; padding:10px 12px; margin-bottom:12px; display:flex; align-items:center; gap:10px;">
+            <span style="font-size:20px;">📄</span>
+            <div style="flex:1;">
+              <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">New Resume Title (Line 1 of JD)</div>
+              <div id="new-resume-name-preview" style="font-size:13px; font-weight:700; color:var(--text-info);">[First line of JD will automatically become the Resume Name]</div>
+            </div>
+            <span class="badge" style="background:rgba(56, 189, 248, 0.15); color:var(--text-info); font-size:10px;">Stage 1: Wishlist</span>
+          </div>
+
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
+            Paste the job posting below. Line 1 will name the new resume, create an entry in your <strong>Resume List & Ledger</strong>, and place it into <strong>Wishlist</strong> in your funnel:
+          </div>
+          <textarea class="textarea" id="jd-text-input" rows="16" placeholder="Paste job title on first line, followed by responsibilities and qualifications...
+Example:
+Senior Distributed Systems Engineer - Cloud Platform
+Google / Mountain View, CA (or Remote)
+Responsibilities & Qualifications:
+..."></textarea>
+          
+          <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
+            <span id="jd-status-text" style="font-size:12px; color:var(--text-secondary);"></span>
+            <button class="btn btn-primary" id="btn-compare-jd" style="background:linear-gradient(135deg, var(--accent-primary-hover), var(--accent-cyan)); border:none; padding:9px 18px; font-weight:600;">
+              <span>✨ Compare</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: ATS Match Results -->
+        <div>
+          <div class="card" id="match-results-card">
+            <div class="card-title">
+              <span>ATS Match Score & Alignment</span>
+              <button class="btn btn-success" id="btn-quick-add-funnel" style="font-size:11px; padding:5px 10px; display:none;">
+                ➕ Add to Funnel
+              </button>
+            </div>
+
+            <div id="match-empty-state" style="text-align:center; padding:40px 10px; color:var(--text-muted); font-size:13px;">
+              Paste a Job Description on the left and click <strong>"✨ Compare"</strong> to derive a new resume and calculate ATS keyword alignment.
+            </div>
+
+            <div id="match-content-box" style="display:none;">
+              <!-- Pipeline status badge -->
+              <div id="match-pipeline-status-badge" style="margin-bottom:14px; background:rgba(56,189,248,0.12); border:1px solid var(--accent-cyan); border-radius:6px; padding:10px 14px; font-size:12px; color:var(--text-info); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <div>
+                  <span style="font-weight:700;">✅ New Resume Created: </span>
+                  <span id="match-created-resume-name" style="color:var(--text-primary); font-weight:600;">-</span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <span class="badge" style="background:var(--accent-cyan); color:#fff; font-size:10px;">Funnel: Wishlist</span>
+                  <span class="badge" style="background:rgba(99,102,241,0.25); color:var(--accent-indigo-soft); font-size:10px;">Resume Ledger Saved</span>
+                </div>
+              </div>
+
+              <!-- Score Hero: gradient ring + What's Working / Issues to Fix -->
+              <div class="score-hero">
+                <div class="score-hero-ring-wrap">
+                  <div class="score-ring" id="match-score-ring">
+                    <div class="score-ring-inner">
+                      <div class="score-ring-value" id="match-score-val">0.0</div>
+                      <div class="score-ring-sub">out of 10</div>
+                    </div>
+                  </div>
+                  <div class="score-hero-label" id="match-score-tier">Overall score</div>
+                </div>
+                <div class="score-hero-cards">
+                  <div class="score-insight-card">
+                    <div class="score-insight-title working"><span>✅</span><span>What's working</span></div>
+                    <ul class="score-insight-list" id="match-whats-working-list"></ul>
+                  </div>
+                  <div class="score-insight-card">
+                    <div class="score-insight-title issues"><span>⚠️</span><span id="match-issues-title">Issues to fix</span></div>
+                    <ul class="score-insight-list" id="match-issues-list"></ul>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:24px; margin-bottom:20px;">
+                <div style="flex:1;">
+                  <div style="font-size:16px; font-weight:700;" id="match-role-title">Target Role</div>
+                  <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;" id="match-company-name">Company</div>
+                  <div class="grid-3" style="font-size:11px;">
+                    <div style="background:var(--bg-stat); padding:8px; border-radius:4px; border:1px solid var(--border-color);">
+                      <div style="color:var(--text-muted)">Must-Haves</div>
+                      <div style="font-size:14px; font-weight:700;" id="match-must-stat">0/0</div>
+                    </div>
+                    <div style="background:var(--bg-stat); padding:8px; border-radius:4px; border:1px solid var(--border-color);">
+                      <div style="color:var(--text-muted)">Nice-to-Haves</div>
+                      <div style="font-size:14px; font-weight:700;" id="match-nice-stat">0/0</div>
+                    </div>
+                    <div style="background:var(--bg-stat); padding:8px; border-radius:4px; border:1px solid var(--border-color);">
+                      <div style="color:var(--text-muted)">Experience</div>
+                      <div style="font-size:14px; font-weight:700;" id="match-exp-stat">-</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Missing Critical Keywords -->
+              <div style="margin-bottom:16px;">
+                <div style="font-size:12px; font-weight:700; color:var(--text-danger); margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                  <span>⚠️ Missing High-Priority Keywords</span>
+                  <span style="font-size:10px; color:var(--text-muted); font-weight:normal;">(Incorporate these to pass ATS filters)</span>
+                </div>
+                <div id="missing-keywords-container" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+              </div>
+
+              <!-- Bonus Candidate Skills -->
+              <div>
+                <div style="font-size:12px; font-weight:700; color:var(--text-info); margin-bottom:6px;">
+                  ✨ Additional Strengths in Your Resume
+                </div>
+                <div id="bonus-skills-container" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+              </div>
+
+              <!-- Next Step Actions -->
+              <div style="margin-top:20px; padding-top:14px; border-top:1px solid var(--border-color); display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-primary" id="btn-flow-to-matrix" style="font-size:11px; padding:6px 14px; background:var(--accent-primary-hover); border:none;">
+                  🎯 View Side-by-Side Matrix (Tab 4) ➔
+                </button>
+                <button class="btn btn-success" id="btn-flow-to-tailor" style="font-size:11px; padding:6px 14px;">
+                  🛠️ Tailor Resume for this Role (Tab 5) ➔
+                </button>
+                <button class="btn btn-outline" id="btn-flow-to-ledger" style="font-size:11px; padding:6px 14px;">
+                  📜 View in Ledger (Tab 6) ➔
+                </button>
+                <button class="btn btn-outline" id="btn-flow-to-funnel" style="font-size:11px; padding:6px 14px;">
+                  📊 View in Funnel (Tab 8) ➔
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: SIDE-BY-SIDE SKILLS ================= -->
+    <section id="tab-skills" class="tab-pane">
+      <div class="card">
+        <div class="card-title">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span>Side-by-Side Detailed Requirement & Skill Matrix</span>
+            <span class="badge badge-nice" id="matrix-source-badge" style="font-size:10px;">⚡ Offline Engine</span>
+          </div>
+          <!-- Filters -->
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline matrix-filter active" data-filter="all" style="font-size:11px; padding:3px 8px;">All</button>
+            <button class="btn btn-outline matrix-filter" data-filter="Must-Have" style="font-size:11px; padding:3px 8px;">Must-Haves Only</button>
+            <button class="btn btn-outline matrix-filter" data-filter="Exact Match" style="font-size:11px; padding:3px 8px;">Matched (✅)</button>
+            <button class="btn btn-outline matrix-filter" data-filter="Partial Match" style="font-size:11px; padding:3px 8px;">Partial (⚠️)</button>
+            <button class="btn btn-outline matrix-filter" data-filter="Missing" style="font-size:11px; padding:3px 8px;">Missing (❌)</button>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:11px; color:var(--text-secondary);">
+          <span>Uncheck any keyword you don't want the AI Tailor (Tab 5) to inject — e.g. hyper-specific industry jargon that isn't actually relevant to you.</span>
+          <span style="display:flex; gap:6px; flex-shrink:0;">
+            <button class="btn btn-outline" id="btn-matrix-select-all" style="font-size:10px; padding:3px 8px;">☑ Select All</button>
+            <button class="btn btn-outline" id="btn-matrix-clear-all" style="font-size:10px; padding:3px 8px;">☐ Clear All</button>
+          </span>
+        </div>
+
+        <div id="skills-empty-state" style="text-align:center; padding:35px 20px; color:var(--text-muted);">
+          <div style="font-size:28px; margin-bottom:8px;">🎯</div>
+          <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">No Comparison Results Yet</div>
+          <div style="font-size:12px; margin-bottom:14px;">Compare your resume with a target Job Description in Tab 3 to see the point-by-point skills matrix.</div>
+          <div style="display:flex; justify-content:center; gap:10px;">
+            <button class="btn btn-primary" id="btn-matrix-quick-sample" style="font-size:11px; padding:6px 14px;">
+              ⚡ Load Sample JD & Compare (Tab 3)
+            </button>
+            <button class="btn btn-outline" id="btn-matrix-goto-compare" style="font-size:11px; padding:6px 14px;">
+              👉 Go to Tab 3 (Compare to JD)
+            </button>
+          </div>
+        </div>
+
+        <div id="skills-table-container" style="overflow-x:auto; display:none;">
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th style="width:6%;" title="Include this in resume generation (Tab 5)">Include</th>
+                <th style="width:19%;">Job Requirement / Key Skill</th>
+                <th style="width:9%;">Priority</th>
+                <th style="width:11%;">Match Status</th>
+                <th style="width:23%;">Resume Context / Evidence</th>
+                <th style="width:32%;">How to Incorporate (Ready-to-Copy Google XYZ Bullet)</th>
+              </tr>
+            </thead>
+            <tbody id="matrix-table-body">
+              <tr>
+                <td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">
+                  Please parse a resume and compare it against a Job Description first to populate the side-by-side matrix.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div id="matrix-action-footer" style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border-color); display:flex; justify-content:flex-end;">
+            <button class="btn btn-success" id="btn-matrix-flow-to-tailor" style="font-size:12px; padding:7px 16px;">
+              🛠️ Proceed to AI Resume Tailor (Tab 5) ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 5: AI RESUME TAILOR ================= -->
+    <section id="tab-tailor" class="tab-pane">
+      <div class="grid-2">
+        <!-- Left: Controls & Configuration -->
+        <div>
+          <!-- Step A: Source Resume (always Master Resume) -->
+          <div class="card">
+            <div class="card-title">
+              <span>1. Resume Source</span>
+              <span class="badge badge-exact" id="tailor-source-indicator">Using: Master Resume Repository</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-secondary);">
+              Tailoring always pulls from your <strong>Master Resume repository</strong> (Tab 1) — <span id="source-master-label">all projects & history</span>.
+            </div>
+          </div>
+
+          <!-- Step B: Select Tailoring Tier -->
+          <div class="card">
+            <div class="card-title">
+              <span>2. Select Tailoring Level</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
+              <!-- Tier 1 -->
+              <label class="tier-card" id="tier-card-1">
+                <input type="radio" name="tailor-tier" value="tier1" style="display:none;">
+                <div style="display:flex; align-items:flex-start; gap:12px;">
+                  <div class="tier-icon" style="background:rgba(56, 189, 248, 0.15); color:var(--text-info);">🔹</div>
+                  <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                      <strong style="font-size:13px; color:var(--text-primary);">Tier 1: Minor Changes (Keyword Injection)</strong>
+                      <span class="badge" style="background:rgba(56, 189, 248, 0.2); color:var(--text-info); font-size:10px;">Low Disruption</span>
+                    </div>
+                    <div style="font-size:11px; color:var(--text-secondary); line-height:1.4;">
+                      Preserves your exact sentence structure and bullet points. Surgically weaves missing JD keywords into existing bullets and skills list.
+                    </div>
+                  </div>
+                </div>
+              </label>
+
+              <!-- Tier 2 -->
+              <label class="tier-card active" id="tier-card-2">
+                <input type="radio" name="tailor-tier" value="tier2" checked style="display:none;">
+                <div style="display:flex; align-items:flex-start; gap:12px;">
+                  <div class="tier-icon" style="background:rgba(99, 102, 241, 0.15); color:var(--accent-indigo);">⚡</div>
+                  <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                      <strong style="font-size:13px; color:var(--text-primary);">Tier 2: Reframing (Rephrase & Action Verbs)</strong>
+                      <span class="badge" style="background:rgba(99, 102, 241, 0.2); color:var(--accent-indigo); font-size:10px;">Recommended</span>
+                    </div>
+                    <div style="font-size:11px; color:var(--text-secondary); line-height:1.4;">
+                      Elevates weak verbs to strong executive/engineering action verbs (Spearheaded, Architected, Engineered), clarifies sentence flow, and injects keywords.
+                    </div>
+                  </div>
+                </div>
+              </label>
+
+              <!-- Tier 3 -->
+              <label class="tier-card" id="tier-card-3">
+                <input type="radio" name="tailor-tier" value="tier3" style="display:none;">
+                <div style="display:flex; align-items:flex-start; gap:12px;">
+                  <div class="tier-icon" style="background:rgba(16, 185, 129, 0.15); color:var(--text-success);">🚀</div>
+                  <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                      <strong style="font-size:13px; color:var(--text-primary);">Tier 3: Major Redo (Full Google XYZ Overhaul)</strong>
+                      <span class="badge" style="background:rgba(16, 185, 129, 0.2); color:var(--text-success); font-size:10px;">Maximum Impact</span>
+                    </div>
+                    <div style="font-size:11px; color:var(--text-secondary); line-height:1.4;">
+                      Comprehensive transformation. Rewrites bullets using Google XYZ (Accomplished [X] measured by [Y] by doing [Z]), aligns summary, and selects optimal projects.
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <!-- Optional Focus Instructions -->
+            <div style="margin-bottom:14px;">
+              <label style="font-size:11px; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">
+                Optional Focus / Custom Instructions for AI:
+              </label>
+              <input type="text" class="input-field" id="tailor-custom-notes" placeholder="e.g. Highlight distributed systems, Kubernetes autoscaling, and low latency...">
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span id="tailor-status-text" style="font-size:12px; color:var(--text-secondary);"></span>
+                <button type="button" class="btn btn-outline" id="btn-tailor-quick-sample-jd" style="font-size:10px; padding:3px 8px; display:none;">
+                  ⚡ Use Sample Senior JD
+                </button>
+              </div>
+              <button class="btn btn-success" id="btn-run-tailor" style="font-size:13px; padding:10px 18px;">
+                <span>✨ Generate Tailored Resume</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Generated Tailored Resume & Audit Preview -->
+        <div>
+          <div class="card" id="tailor-results-card">
+            <!-- Empty State -->
+            <div id="tailor-empty-state" style="text-align:center; padding:60px 20px; color:var(--text-muted); font-size:13px;">
+              <div style="font-size:36px; margin-bottom:12px;">🛠️</div>
+              <div style="font-size:15px; font-weight:700; color:var(--text-secondary); margin-bottom:6px;">Ready to Tailor & Generate</div>
+              <div>Select your source resume, tailoring level, and click <strong>"Generate Tailored Resume"</strong>.</div>
+            </div>
+
+            <!-- Active Results Box -->
+            <div id="tailor-results-content" style="display:none;">
+              <!-- Score Delta Banner -->
+              <div style="background:var(--bg-stat); border:1px solid var(--border-color); border-radius:6px; padding:14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">ATS Match Score Improvement</div>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:16px; color:var(--text-danger); font-weight:700;" id="score-before-display">48%</span>
+                    <span style="font-size:14px; color:var(--text-muted);">➔</span>
+                    <span style="font-size:22px; color:var(--text-success); font-weight:800;" id="score-after-display">89%</span>
+                    <span class="badge badge-exact" id="score-gain-badge" style="font-size:11px;">+41% Gain 🚀</span>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:11px; color:var(--text-muted);" id="tailor-engine-badge">Deep Infra Llama 70B</div>
+                  <div style="font-size:12px; font-weight:700; color:var(--accent-indigo);" id="tailor-tier-display">Tier 2: Reframing</div>
+                </div>
+              </div>
+
+              <!-- Action Bar: Download DOCX & Link to Funnel -->
+              <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; justify-content:space-between; align-items:center; background:var(--bg-card); padding:10px 14px; border-radius:6px;">
+                <div style="display:flex; gap:8px;">
+                  <a id="btn-download-docx" href="#" class="btn btn-primary" style="font-size:12px; padding:6px 12px; text-decoration:none;">
+                    💾 Download Word (.docx)
+                  </a>
+                  <a id="btn-download-txt" href="#" class="btn btn-outline" style="font-size:12px; padding:6px 12px; text-decoration:none;">
+                    📄 Download .txt
+                  </a>
+                  <button class="btn btn-outline" id="btn-copy-tailored" style="font-size:12px; padding:6px 12px;">
+                    📋 Copy Text
+                  </button>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn btn-success" id="btn-link-tailored-funnel" style="font-size:12px; padding:6px 12px;">
+                    ➕ Link to Funnel
+                  </button>
+                  <button class="btn btn-outline" id="btn-tailor-view-ledger" style="font-size:12px; padding:6px 12px;">
+                    📜 View in Ledger (Tab 3) ➔
+                  </button>
+                </div>
+              </div>
+
+              <!-- Preview Sub-Tabs -->
+              <div style="display:flex; gap:6px; border-bottom:1px solid var(--border-color); margin-bottom:12px;">
+                <button class="btn btn-outline tailor-view-btn active" data-view="formatted" style="font-size:11px; padding:4px 10px;">📄 Formatted Document</button>
+                <button class="btn btn-outline tailor-view-btn" data-view="diff" style="font-size:11px; padding:4px 10px;">🔍 Changes & Audit Log</button>
+                <button class="btn btn-outline tailor-view-btn" data-view="raw" style="font-size:11px; padding:4px 10px;">📝 Plain ATS Text</button>
+              </div>
+
+              <!-- Formatted Preview -->
+              <div id="tailor-view-formatted" class="tailor-subview" style="max-height:480px; overflow-y:auto; background:#ffffff; color:#1e293b; padding:24px; border-radius:6px; font-family:Calibri, Arial, sans-serif; font-size:12px; line-height:1.4;">
+              </div>
+
+              <!-- Diff & Changes List -->
+              <div id="tailor-view-diff" class="tailor-subview" style="display:none; max-height:480px; overflow-y:auto;">
+                <div id="tailor-changes-list"></div>
+              </div>
+
+              <!-- Plain ATS Text -->
+              <div id="tailor-view-raw" class="tailor-subview" style="display:none;">
+                <textarea class="textarea" id="tailor-raw-text" rows="18" readonly style="font-family:monospace; font-size:11px;"></textarea>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 6: RESUME LEDGER & TRACE ================= -->
+    <section id="tab-ledger" class="tab-pane">
+      <div class="grid-3" style="margin-bottom:16px;">
+        <div class="card" style="margin-bottom:0; padding:12px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Total Generated Resumes</div>
+          <div style="font-size:22px; font-weight:800; color:var(--text-primary);" id="ledger-stat-total">0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; padding:12px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Average ATS Score Gain</div>
+          <div style="font-size:22px; font-weight:800; color:var(--text-success);" id="ledger-stat-avg-gain">+0%</div>
+        </div>
+        <div class="card" style="margin-bottom:0; padding:12px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Latest Tailoring Tier</div>
+          <div style="font-size:16px; font-weight:700; color:var(--accent-indigo); margin-top:4px;" id="ledger-stat-latest-tier">-</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Persistent Resume Version Ledger & Audit Trace</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary" id="btn-ledger-create-from-jd" style="font-size:11px; padding:4px 10px; background:linear-gradient(135deg, var(--accent-primary-hover), var(--accent-cyan)); border:none;">
+              ✨ + Create New Resume from JD
+            </button>
+            <button class="btn btn-outline" id="btn-refresh-ledger" style="font-size:11px; padding:3px 8px;">
+              🔄 Refresh
+            </button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="matrix-table" id="ledger-table">
+            <thead>
+              <tr>
+                <th style="width:14%;">Date / Time</th>
+                <th style="width:20%;">Target Role & Company</th>
+                <th style="width:12%;">Source</th>
+                <th style="width:14%;">Tailoring Tier</th>
+                <th style="width:14%;">Match Score (Before ➔ After)</th>
+                <th style="width:26%;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-table-body">
+              <tr>
+                <td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">
+                  No generated resumes in ledger yet. Tailor a resume in Tab 5 to start tracking versions.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 7: AUDIT & TIPS ================= -->
+    <section id="tab-suggestions" class="tab-pane">
+
+      <!-- Resume Quality Score: 7-category rubric -->
+      <div class="score-hero">
+        <div class="score-hero-ring-wrap">
+          <div class="score-ring" id="rubric-score-ring">
+            <div class="score-ring-inner">
+              <div class="score-ring-value" id="rubric-score-val">0.0</div>
+              <div class="score-ring-sub">out of 10</div>
+            </div>
+          </div>
+          <div class="score-hero-label" id="rubric-score-tier">Overall score</div>
+        </div>
+        <div class="score-hero-cards">
+          <div class="score-insight-card">
+            <div class="score-insight-title working"><span>✅</span><span>What's working</span></div>
+            <ul class="score-insight-list" id="rubric-whats-working-list"></ul>
+          </div>
+          <div class="score-insight-card">
+            <div class="score-insight-title issues"><span>⚠️</span><span id="rubric-issues-title">Issues to fix</span></div>
+            <ul class="score-insight-list" id="rubric-issues-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Detailed breakdown</div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">
+        Your score on each of the 7 parameters. Open any one for its strengths and what to fix.
+      </div>
+      <div id="rubric-breakdown-container">
+        <div style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">Scoring your resume...</div>
+      </div>
+
+      <div style="font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px; margin-top:28px;">Actionable Rewrites</div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">
+        Section-by-section rewrite suggestions tailored to a specific Job Description. Compare a resume in Tab 3 first, then open any one for the recommended fix.
+      </div>
+
+      <!-- Section 1: Professional Summary -->
+      <div class="accordion-item" data-accordion>
+        <div class="accordion-header" data-accordion-toggle>
+          <div class="accordion-header-text">
+            <div class="accordion-title">Professional Summary & Headline</div>
+            <div class="accordion-subtitle">Does your opening summary lead with role, seniority and keywords</div>
+          </div>
+          <span class="accordion-toggle-label"><span class="chevron">▾</span> Hide details</span>
+        </div>
+        <div class="accordion-body">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+            <button class="btn btn-outline" id="btn-copy-summary" style="font-size:11px; padding:4px 8px;">
+              📋 Copy Recommended Summary
+            </button>
+          </div>
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;" id="summary-rationale-text">
+            ATS parsers look for exact role titles and primary keywords in the top third of the resume.
+          </div>
+          <div class="diff-box">
+            <div class="diff-panel diff-original">
+              <div class="diff-header" style="color:var(--text-danger);">Current Summary</div>
+              <div id="summary-current-text" style="color:var(--text-secondary);">[Not yet compared]</div>
+            </div>
+            <div class="diff-panel diff-suggested">
+              <div class="diff-header" style="color:var(--text-success);">Recommended ATS Tailored Summary</div>
+              <div id="summary-recommended-text" style="color:var(--text-secondary); font-weight:500;">[Not yet compared]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Work Experience Bullets Optimizer -->
+      <div class="accordion-item" data-accordion>
+        <div class="accordion-header" data-accordion-toggle>
+          <div class="accordion-header-text">
+            <div class="accordion-title">Work Experience Bullet Points</div>
+            <div class="accordion-subtitle">Google XYZ / STAR method, with JD keywords injected</div>
+          </div>
+          <span class="accordion-toggle-label"><span class="chevron">▾</span> Hide details</span>
+        </div>
+        <div class="accordion-body">
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+            Rewriting weak bullets to follow: <em>"Accomplished [X], as measured by [Y], by doing [Z]"</em> with injected JD keywords:
+          </div>
+          <div id="experience-suggestions-container">
+            <div style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">
+              Compare a resume to a JD to see line-by-line bullet improvements.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Skills Section Optimization -->
+      <div class="accordion-item" data-accordion>
+        <div class="accordion-header" data-accordion-toggle>
+          <div class="accordion-header-text">
+            <div class="accordion-title">Skills Ordering & Prioritization</div>
+            <div class="accordion-subtitle">Are the most relevant skills surfaced first, and evidenced in your bullets</div>
+          </div>
+          <span class="accordion-toggle-label"><span class="chevron">▾</span> Hide details</span>
+        </div>
+        <div class="accordion-body">
+          <div id="skills-suggestion-content" style="font-size:13px; color:var(--text-secondary);">
+            Compare a resume to a JD to get prioritization guidance.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 8: APPLICATION FUNNEL ================= -->
+    <section id="tab-funnel" class="tab-pane">
+      <!-- Funnel Metrics Bar -->
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="card" style="margin-bottom:0; padding:14px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Total Tracked</div>
+          <div style="font-size:24px; font-weight:800; color:var(--text-primary);" id="funnel-stat-total">0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; padding:14px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Active in Pipeline</div>
+          <div style="font-size:24px; font-weight:800; color:var(--text-info);" id="funnel-stat-pipeline">0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; padding:14px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Interview Rate</div>
+          <div style="font-size:24px; font-weight:800; color:var(--accent-indigo);" id="funnel-stat-interview-rate">0%</div>
+        </div>
+        <div class="card" style="margin-bottom:0; padding:14px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Offer Rate</div>
+          <div style="font-size:24px; font-weight:800; color:var(--text-success);" id="funnel-stat-offer-rate">0%</div>
+        </div>
+      </div>
+
+      <!-- Kanban Controls -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <div style="font-size:14px; font-weight:700;">Job Application Pipeline</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" id="btn-funnel-create-from-jd" style="font-size:12px; padding:6px 12px; background:linear-gradient(135deg, var(--accent-primary-hover), var(--accent-cyan)); border:none;">
+            ✨ + Create New Resume from JD
+          </button>
+          <button class="btn btn-success" id="btn-open-add-modal" style="font-size:12px; padding:6px 12px;">
+            <span>➕ Add Application</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Kanban Board Columns -->
+      <div class="kanban-board" id="kanban-board">
+        <!-- Columns will be populated dynamically by JS: Wishlist, Applied, Screening, Interviewing, Offer, Rejected -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-content" style="width: 920px; max-width: 95vw; max-height: 85vh; display:flex; flex-direction:column;">
+      <div class="card-title">
+        <span>⚙️ Settings</span>
+        <button class="btn btn-outline" id="btn-close-settings-modal" style="padding:2px 8px; font-size:14px;">✕</button>
+      </div>
+      <div class="settings-layout" style="overflow-y:auto;">
+        <!-- Settings Sidebar -->
+        <nav class="settings-sidebar">
+          <button class="settings-sidebar-item active" data-settings-panel="settings-panel-providers">
+            <span>🔌</span> AI Providers
+          </button>
+          <button class="settings-sidebar-item" data-settings-panel="settings-panel-theme">
+            <span>🎨</span> Appearance
+          </button>
+        </nav>
+
+        <!-- Settings Content -->
+        <div class="settings-content">
+
+      <div id="settings-panel-providers" class="settings-panel active">
+      <div style="font-size:15px; font-weight:700; margin-bottom:4px;">⚙️ AI Providers & API Key Manager</div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+        Connect to any OpenAI-compatible inference provider (OpenAI, OpenRouter, Groq, DeepSeek, Local Ollama, vLLM).
+        All keys are stored securely in your local SQLite database.
+      </div>
+
+      <div class="card">
+        <!-- Provider Preset Dropdown -->
+        <div style="margin-bottom:12px; background:var(--bg-stat); padding:10px; border-radius:6px; border:1px solid var(--border-color);">
+          <label style="font-size:11px; font-weight:700; color:var(--accent-indigo); display:block; margin-bottom:4px;">⚡ Quick Presets (Auto-fills endpoint & model)</label>
+          <select class="input-field" id="setting-preset-select">
+            <option value="custom">-- Select a Provider Preset or Custom --</option>
+            <option value="openai">OpenAI (Official) - gpt-4o-mini / gpt-4o</option>
+            <option value="openrouter">OpenRouter - Llama 3.3 70B / Claude 3.5 / Gemini</option>
+            <option value="groq">Groq (Ultra-Fast) - Llama-3.3-70B-Versatile</option>
+            <option value="deepseek">DeepSeek - deepseek-chat</option>
+            <option value="ollama">Ollama (Local Offline) - llama3 / mistral</option>
+            <option value="custom">Custom OpenAI-Compatible API</option>
+          </select>
+        </div>
+
+        <!-- Add/Edit Provider Form -->
+        <form id="provider-form">
+          <input type="hidden" id="setting-provider-id" value="">
+          <div id="editing-indicator" style="display:none; font-size:12px; color:var(--accent-indigo); margin-bottom:8px; background:rgba(99,102,241,0.15); padding:6px 10px; border-radius:4px; border:1px solid rgba(99,102,241,0.3); display:flex; justify-content:space-between; align-items:center;">
+            <span>✏️ Loaded for Editing: <strong id="editing-provider-name" style="color:var(--text-primary);">Provider</strong></span>
+            <span style="font-size:11px; color:var(--text-secondary);">Test connection or modify below</span>
+          </div>
+          <div class="grid-2" style="margin-bottom:8px;">
+            <div>
+              <label style="font-size:11px; color:var(--text-secondary);">Provider Name *</label>
+              <input type="text" class="input-field" id="setting-name" required placeholder="e.g. Groq Fast, OpenAI">
+            </div>
+            <div>
+              <label style="font-size:11px; color:var(--text-secondary);">Model Name *</label>
+              <input type="text" class="input-field" id="setting-model" required placeholder="e.g. gpt-4o-mini, llama-3.3-70b-versatile">
+            </div>
+          </div>
+
+          <div style="margin-bottom:8px;">
+            <label style="font-size:11px; color:var(--text-secondary);">Base URL (OpenAI-Compatible Endpoint) *</label>
+            <input type="text" class="input-field" id="setting-url" required placeholder="https://api.openai.com/v1">
+          </div>
+
+          <div style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--text-secondary);">API Key (Leave empty for local Ollama)</label>
+              <span id="btn-toggle-key-visibility" style="font-size:10px; color:var(--text-info); cursor:pointer;">👁️ Show Key</span>
+            </div>
+            <input type="password" class="input-field" id="setting-key" placeholder="sk-...">
+          </div>
+
+          <!-- Connection Test Result Box -->
+          <div id="test-connection-result" style="display:none; font-size:11px; padding:8px 10px; border-radius:4px; margin-bottom:10px;"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <button type="button" class="btn btn-outline" id="btn-test-connection">
+              <span>🧪 Test Connection</span>
+            </button>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-secondary" id="btn-clear-provider-form">Cancel / New</button>
+              <button type="submit" class="btn btn-success" id="btn-save-provider">
+                <span id="btn-save-provider-text">💾 Save to Database</span>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Saved Providers List -->
+        <div style="border-top:1px solid var(--border-color); padding-top:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; font-weight:700; color:var(--text-primary);">Saved Providers in Database</span>
+            <button class="btn btn-outline" id="btn-use-offline-engine" style="font-size:10px; padding:3px 8px;">
+              ⚡ Use Local Offline Engine
+            </button>
+          </div>
+
+          <div id="saved-providers-list" style="max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
+            <div style="color:var(--text-muted); font-size:12px; text-align:center; padding:10px;">Loading providers...</div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <div id="settings-panel-theme" class="settings-panel">
+      <div style="font-size:15px; font-weight:700; margin-bottom:4px;">🎨 Appearance / Theme</div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+        Choose a predefined color template, or fine-tune individual colors below.
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <span>Predefined Templates</span>
+          <button class="btn btn-outline" id="btn-theme-reset" style="font-size:11px; padding:4px 10px;">
+            ↺ Reset to Default
+          </button>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+          Click a template to apply it instantly across the whole app. Fine-tune individual colors below.
+        </div>
+        <div class="theme-template-grid" id="theme-template-grid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Customize Colors</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+          Pick any color for each part of the UI. Changes apply live and are saved to this browser automatically.
+        </div>
+        <div id="theme-customize-groups"></div>
+      </div>
+      </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Application Modal -->
+  <div class="modal-overlay" id="add-app-modal">
+    <div class="modal-content">
+      <div class="card-title">
+        <span>Add Job Application</span>
+        <button class="btn btn-outline" id="btn-close-modal" style="padding:2px 8px; font-size:14px;">✕</button>
+      </div>
+      <form id="add-app-form">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Company Name *</label>
+          <input type="text" class="input-field" id="form-company" required placeholder="e.g. Google, Stripe, Meta">
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Target Role *</label>
+          <input type="text" class="input-field" id="form-role" required placeholder="e.g. Senior Machine Learning Engineer">
+        </div>
+        <div class="grid-2" style="margin-bottom:10px;">
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary);">Initial Stage</label>
+            <select class="input-field" id="form-stage">
+              <option value="Wishlist" selected>Wishlist</option>
+              <option value="Resume Screening">Resume Screening</option>
+              <option value="Recruiter Screening">Recruiter Screening</option>
+              <option value="Interview">Interview</option>
+              <option value="Offer">Offer</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary);">Match Score (%)</label>
+            <input type="number" step="0.1" class="input-field" id="form-score" placeholder="e.g. 85">
+          </div>
+        </div>
+        <div id="form-interview-step-group" style="margin-bottom:10px; display:none;">
+          <label style="font-size:11px; color:var(--text-secondary);">Interview Step / Round (for Interview stage)</label>
+          <input type="text" class="input-field" id="form-interview-step" placeholder="e.g. Round 1: Technical Screen">
+        </div>
+        <div class="grid-2" style="margin-bottom:10px;">
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary);">Location</label>
+            <input type="text" class="input-field" id="form-location" placeholder="e.g. Remote / New York">
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary);">Salary / Compensation</label>
+            <input type="text" class="input-field" id="form-salary" placeholder="e.g. $160,000 - $190,000">
+          </div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Job URL</label>
+          <input type="url" class="input-field" id="form-url" placeholder="https://...">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Notes / Interview Dates</label>
+          <textarea class="textarea" id="form-notes" rows="3" placeholder="Recruiter name, referral, next interview round..."></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Save to Pipeline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Interview Step / Rounds Progression Modal -->
+  <div class="modal-overlay" id="interview-step-modal">
+    <div class="modal-content" style="max-width:460px;">
+      <div class="card-title">
+        <span>Interview Rounds & Step Progression</span>
+        <button class="btn btn-outline" id="btn-close-interview-modal" style="padding:2px 8px; font-size:14px;">✕</button>
+      </div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+        Track organization-specific interview steps for <strong id="interview-modal-company" style="color:var(--text-primary);">Target Role</strong>:
+      </div>
+      <div style="background:var(--bg-stat); border:1px solid var(--border-color); border-radius:6px; padding:10px; margin-bottom:12px;">
+        <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Current Interview Step</div>
+        <div id="interview-modal-current-step" style="font-size:14px; font-weight:700; color:var(--accent-indigo); margin-top:2px;">Round 1: Technical Screen</div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Next Round or Custom Step Name:</label>
+        <input type="text" class="input-field" id="interview-modal-step-input" placeholder="e.g. Round 2: System Design / Onsite">
+        <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-outline btn-quick-step" data-step="Round 2: Coding & Algorithms" style="font-size:10px; padding:2px 6px;">Round 2: Coding</button>
+          <button type="button" class="btn btn-outline btn-quick-step" data-step="Round 2: System Design & Architecture" style="font-size:10px; padding:2px 6px;">Round 2: System Design</button>
+          <button type="button" class="btn btn-outline btn-quick-step" data-step="Round 3: Hiring Manager & Culture" style="font-size:10px; padding:2px 6px;">Round 3: Hiring Manager</button>
+          <button type="button" class="btn btn-outline btn-quick-step" data-step="Round 4: Executive / Bar Raiser" style="font-size:10px; padding:2px 6px;">Round 4: Bar Raiser</button>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:12px; flex-wrap:wrap; gap:8px;">
+        <button class="btn btn-outline" id="btn-interview-save-name" style="font-size:11px;">
+          💾 Rename Step
+        </button>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-primary" id="btn-interview-advance-step" style="font-size:11px; background:var(--accent-primary-hover);">
+            ✓ Pass Round ➔ Next Step
+          </button>
+          <button class="btn btn-success" id="btn-interview-pass-offer" style="font-size:11px;">
+            🏆 Pass All ➔ Offer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejection Confirmation Modal -->
+  <div class="modal-overlay" id="reject-modal">
+    <div class="modal-content" style="max-width:420px;">
+      <div class="card-title">
+        <span>Confirm Application Rejection</span>
+        <button class="btn btn-outline" id="btn-close-reject-modal" style="padding:2px 8px; font-size:14px;">✕</button>
+      </div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+        Record rejection for <strong id="reject-modal-company" style="color:var(--text-primary);">Company</strong>:
+      </div>
+      <div style="background:var(--bg-stat); border:1px solid var(--border-color); border-radius:6px; padding:10px; margin-bottom:12px;">
+        <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Rejection Stage Tracked</div>
+        <div id="reject-modal-stage-display" style="font-size:13px; font-weight:700; color:var(--text-danger); margin-top:2px;">Resume Screening</div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Optional Rejection Notes / Feedback:</label>
+        <input type="text" class="input-field" id="reject-modal-notes-input" placeholder="e.g. Budget freeze, role cancelled, or technical gap...">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-reject-modal">Cancel</button>
+        <button type="button" class="btn" id="btn-confirm-reject" style="background:var(--accent-red); color:#fff; font-size:12px; font-weight:600;">
+          ✕ Move to Rejected
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Master Profile Create / Duplicate / Rename Modal -->
+  <div class="modal-overlay" id="master-profile-modal">
+    <div class="modal-content" style="max-width:420px;">
+      <div class="card-title">
+        <span id="master-profile-modal-title">New Master Profile</span>
+        <button class="btn btn-outline" id="btn-close-master-profile-modal" style="padding:2px 8px; font-size:14px;">✕</button>
+      </div>
+      <div id="master-profile-modal-desc" style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+        Create a new blank Master Profile.
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Profile Name</label>
+        <input type="text" class="input-field" id="master-profile-modal-input" placeholder="e.g. Data Science Focus" style="width:100%;">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-master-profile-modal">Cancel</button>
+        <button type="button" class="btn btn-success" id="btn-confirm-master-profile-modal">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Master Profile Delete Confirmation Modal -->
+  <div class="modal-overlay" id="master-profile-delete-modal">
+    <div class="modal-content" style="max-width:420px;">
+      <div class="card-title">
+        <span>Delete Master Profile</span>
+        <button class="btn btn-outline" id="btn-close-master-profile-delete-modal" style="padding:2px 8px; font-size:14px;">✕</button>
+      </div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+        Permanently delete <strong id="master-profile-delete-name" style="color:var(--text-primary);">this profile</strong>? This cannot be undone.
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-master-profile-delete-modal">Cancel</button>
+        <button type="button" class="btn" id="btn-confirm-master-profile-delete-modal" style="background:var(--accent-red); color:#fff; font-size:12px; font-weight:600;">
+          🗑 Delete Profile
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Project Modal -->
+  <div class="modal-overlay" id="add-project-modal">
+    <div class="modal-content" style="width: 580px; max-width: 95vw;">
+      <div class="card-title">
+        <span id="project-modal-title">➕ Add Career Project to Master Resume</span>
+        <button class="btn btn-outline" id="btn-close-project-modal" style="padding:2px 8px; font-size:14px;">✕</button>
+      </div>
+      <form id="project-form">
+        <input type="hidden" id="project-form-id" value="">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Project Title *</label>
+          <input type="text" class="input-field" id="project-form-name" required placeholder="e.g. Multi-Tenant Enterprise RAG Platform">
+        </div>
+        <div class="grid-2" style="margin-bottom:10px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--text-secondary);">Organisation / Company Name *</label>
+              <span id="quick-org-hint" style="font-size:10px; color:var(--text-info); cursor:pointer;" title="Choose from your experience companies">⚡ Suggest</span>
+            </div>
+            <input type="text" class="input-field" id="project-form-org" list="org-options-list" required placeholder="e.g. Apex AI Technologies (or Personal / Open Source)">
+            <datalist id="org-options-list"></datalist>
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary);" title="Duration is linked to the organisation, representing your tenure at this company">
+              Organisation Duration (Tenure) *
+            </label>
+            <input type="text" class="input-field" id="project-form-org-duration" placeholder="e.g. 2022 - Present">
+            <span style="font-size:10px; color:var(--text-muted);">Duration is linked to Organisation only</span>
+          </div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Technologies & Tools Used *</label>
+          <input type="text" class="input-field" id="project-form-tech" required placeholder="e.g. Python, PyTorch, LangChain, Pinecone, FastAPI, Docker">
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Brief Architectural Description</label>
+          <input type="text" class="input-field" id="project-form-desc" placeholder="e.g. Enterprise RAG Q&A platform with hybrid vector retrieval...">
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Measurable Impact / Key Metrics</label>
+          <input type="text" class="input-field" id="project-form-metrics" placeholder="e.g. 45% latency reduction, 500+ concurrent enterprise users">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:11px; color:var(--text-secondary);">Achievement Bullet Points (One per line)</label>
+          <textarea class="textarea" id="project-form-bullets" rows="4" placeholder="- Architected hybrid BM25 + dense Pinecone vector retrieval with BERT re-ranking.&#10;- Built token-streaming FastAPI endpoints with Redis caching."></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-project-modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Ledger Inspect Modal -->
+  <div class="modal-overlay" id="ledger-inspect-modal">
+    <div class="modal-content" style="width: 820px; max-width: 95vw;">
+      <div class="card-title">
+        <div>
+          <span id="inspect-modal-role">Tailored Resume</span>
+          <span style="font-size:12px; color:var(--text-secondary);" id="inspect-modal-company">Company</span>
+        </div>
+        <button class="btn btn-outline" id="btn-close-inspect-modal" style="padding:2px 8px; font-size:14px;">✕</button>
+      </div>
+
+      <!-- Meta Bar -->
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-stat); padding:10px 14px; border-radius:6px; border:1px solid var(--border-color); margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span class="badge" style="background:rgba(99,102,241,0.2); color:var(--accent-indigo); font-size:11px;" id="inspect-modal-tier">Tier</span>
+          <span style="font-size:11px; color:var(--text-secondary);" id="inspect-modal-date">Date</span>
+          <span style="font-size:11px; color:var(--text-muted);" id="inspect-modal-source">Source</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:12px; color:var(--text-danger);" id="inspect-modal-before">0%</span>
+          <span style="font-size:11px; color:var(--text-muted);">➔</span>
+          <span style="font-size:16px; font-weight:800; color:var(--text-success);" id="inspect-modal-after">0%</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="display:flex; gap:8px;">
+          <a id="inspect-btn-download-docx" href="#" class="btn btn-primary" style="font-size:11px; padding:5px 10px; text-decoration:none;">
+            💾 Download Word (.docx)
+          </a>
+          <a id="inspect-btn-download-txt" href="#" class="btn btn-outline" style="font-size:11px; padding:5px 10px; text-decoration:none;">
+            📄 Download .txt
+          </a>
+          <button class="btn btn-outline" id="inspect-btn-copy" style="font-size:11px; padding:5px 10px;">
+            📋 Copy Text
+          </button>
+        </div>
+        <button class="btn btn-success" id="inspect-btn-link-funnel" style="font-size:11px; padding:5px 10px;">
+          ➕ Link to Job Application
+        </button>
+      </div>
+
+      <!-- Preview Sub-Tabs -->
+      <div style="display:flex; gap:6px; border-bottom:1px solid var(--border-color); margin-bottom:10px;">
+        <button class="btn btn-outline inspect-view-btn active" data-view="formatted" style="font-size:11px; padding:4px 10px;">📄 Formatted Document</button>
+        <button class="btn btn-outline inspect-view-btn" data-view="diff" style="font-size:11px; padding:4px 10px;">🔍 Changes & Audit Log</button>
+        <button class="btn btn-outline inspect-view-btn" data-view="raw" style="font-size:11px; padding:4px 10px;">📝 Plain Text</button>
+      </div>
+
+      <!-- Formatted View -->
+      <div id="inspect-view-formatted" class="inspect-subview" style="max-height:420px; overflow-y:auto; background:#ffffff; color:#1e293b; padding:20px; border-radius:6px; font-family:Calibri, Arial, sans-serif; font-size:11.5px; line-height:1.4;">
+      </div>
+
+      <!-- Changes View -->
+      <div id="inspect-view-diff" class="inspect-subview" style="display:none; max-height:420px; overflow-y:auto;">
+        <div id="inspect-changes-list"></div>
+      </div>
+
+      <!-- Raw Text View -->
+      <div id="inspect-view-raw" class="inspect-subview" style="display:none;">
+        <textarea class="textarea" id="inspect-raw-text" rows="16" readonly style="font-family:monospace; font-size:11px;"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <script src="/static/js/app.js?v=3.7"></script>
+</body>
+</html>
